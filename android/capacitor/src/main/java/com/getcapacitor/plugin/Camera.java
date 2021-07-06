@@ -101,6 +101,7 @@ public class Camera extends Plugin {
     }
   }
 
+  
   private void showPrompt(final PluginCall call) {
     // We have all necessary permissions, open the camera
     String promptLabelPhoto = call.getString("promptLabelPhoto", "From Photos");
@@ -115,21 +116,26 @@ public class Camera extends Plugin {
       takePicture
     };
 
-    Dialogs.actions(getActivity(), options, new Dialogs.OnSelectListener() {
+    new Handler(Looper.getMainLooper()).post(new Runnable() {
       @Override
-      public void onSelect(int index) {
-        if (index == 0) {
-          settings.setSource(CameraSource.PHOTOS);
-          openPhotos(call);
-        } else if (index == 1) {
-          settings.setSource(CameraSource.CAMERA);
-          openCamera(call);
-        }
-      }
-    }, new Dialogs.OnCancelListener() {
-      @Override
-      public void onCancel() {
-        call.error("User cancelled photos app");
+      public void run() {
+        Dialogs.actions(getActivity(), options, new Dialogs.OnSelectListener() {
+          @Override
+          public void onSelect(int index) {
+            if (index == 0) {
+              settings.setSource(CameraSource.PHOTOS);
+              openPhotos(call);
+            } else if (index == 1) {
+              settings.setSource(CameraSource.CAMERA);
+              openCamera(call);
+            }
+          }
+        }, new Dialogs.OnCancelListener() {
+          @Override
+          public void onCancel() {
+            call.error("User cancelled photos app");
+          }
+        });
       }
     });
   }
